@@ -1,0 +1,52 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Seed for reproducibility
+np.random.seed(42)
+
+# Sample size
+n = 1000
+
+# Generate data for Variation A
+data_a = np.random.choice([0, 1], size=n, p=[0.95, 0.05])
+print(data_a)
+
+# Generate data for Variation B
+data_b = np.random.choice([0, 1], size=n, p=[0.93, 0.07])
+print(data_b)
+
+# Combine data into a single DataFrame
+data = pd.DataFrame({'group': ['A'] * n + ['B'] * n,
+                     'conversion': np.concatenate([data_a, data_b])})
+
+from scipy.stats import chi2_contingency
+
+# Create a contingency table
+contingency_table = pd.crosstab(data['group'], data['conversion'])
+
+# Plot the contingency table as a bar chart
+contingency_table.plot(kind='bar', stacked=True)
+
+# Set the plot labels and title
+plt.xlabel('Group')
+plt.ylabel('Count')
+plt.title('Contingency Table')
+plt.xticks(rotation=0)
+
+# Display the plot
+plt.show()
+
+# Perform the Chi-squared test
+chi2, p_value, degrees, frequency = chi2_contingency(contingency_table)
+
+# Display results
+print(f"Chi-squared statistic: {chi2:.2f}")
+print(f"P-value: {p_value:.4f}")
+print(f"degrees of freedom: {degrees:.2f}")
+print(frequency)
+# Calculate conversion rates for each group
+conversion_rates = data.groupby('group')['conversion'].mean()
+
+print("\nConversion rates:")
+print(conversion_rates)
